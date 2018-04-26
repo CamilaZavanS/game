@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Squat Meter</title>
+      <style>
+        .value{font-weight: bold;}
+        .menu a 
+            { 
+            text-decoration: none;
+            color: rgb(61, 127, 180)      
+                
+            }
+
+      </style>
+      <nav id="menu">
+            <h1><ul class="menu">
+                <a href="http://dev.cloudgym.com.br/game">Home</a>
+                <a href="http://dev.cloudgym.com.br/game/jump.html">Jump</a>
+                <a href="http://dev.cloudgym.com.br/game/moving.html">Moving</a>
+                <a href="http://dev.cloudgym.com.br/game/pedal.html">Pedal</a>
+                <a href="http://dev.cloudgym.com.br/game/punch.html">Punch</a>
+                <a href="http://dev.cloudgym.com.br/game/squat.html">Squat</a>
+            </ul></h1>
+        </nav>
+   </head>
+   <body>
+      <h1>Squat Meter</h1>
+      <div id="do-results">
+            <p>Squat: <span id="squat" class="value">0</span></p>
+            <p>Interval: <span id="interval" class="value">0</span> milliseconds</p>
+            <p>Log: <span id="log" class="value"></span></p>
+         </div>
+      </div>
+      <script>
+         var squating = false;
+         var squat=0;
+         var squatt0=0;
+         var lastSquat=0;
+         var _gravityCoefficient;
+         var x;
+         var y;
+         var z;
+         
+         if (!window.DeviceMotionEvent) {
+            //document.getElementById('dm-unsupported').classList.remove('hidden');
+            alert('DeviceMotion não suportado');
+         } else {
+ 
+            window.addEventListener('devicemotion', function(event) {
+               _gravityCoefficient = (event.accelerationIncludingGravity.z > 0) ? -1 : 1;
+               x = event.accelerationIncludingGravity.x * _gravityCoefficient;
+               y = event.accelerationIncludingGravity.y * _gravityCoefficient;
+               z = event.accelerationIncludingGravity.z * _gravityCoefficient;
+               
+               total = 0;
+               
+               if (x < 0){
+                    total += x;
+               }
+               if (y < 0){
+                    total += y;
+               }
+               if (z < 0){
+                    total += z;
+               }              
+               
+               total = Math.round(total);
+
+               
+               document.getElementById('log').innerHTML = total;
+                 
+               
+               if (!squating && y < -6 && total < -15 && total > -28){
+                    if (squatt0 == 0){
+                        squatt0 = performance.now();
+                        lastSquat = total;
+                    }
+                    if ((performance.now() - squatt0) > 500 && Math.abs(lastSquat - total) >=3  ) {
+                        squating = true;
+                        squatt0 = performance.now();
+                    }
+               }else if (squating && (performance.now() - squatt0) > 350){
+                    squating = false;
+                    squat ++;
+                    squatt0 = 0;
+               }else if ((performance.now() - squatt0) > 360){
+                    squatt0 = 0;
+               } 
+               
+               document.getElementById('squat').innerHTML = squat;
+               document.getElementById('interval').innerHTML = event.interval;
+	        });
+         }
+
+      </script>
+   </body>
+</html>
+

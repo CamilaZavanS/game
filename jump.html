@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Jump Meter</title>
+      <style>
+        .value{font-weight: bold;}
+     
+      .menu a 
+      { 
+      text-decoration: none;
+      color: rgb(61, 127, 180)      
+          
+      }
+
+     </style>
+        <nav id="menu">
+            <h1><ul class="menu">
+                <a href="http://dev.cloudgym.com.br/game">Home</a>
+                <a href="http://dev.cloudgym.com.br/game/jump.html">Jump</a>
+                <a href="http://dev.cloudgym.com.br/game/moving.html">Moving</a>
+                <a href="http://dev.cloudgym.com.br/game/pedal.html">Pedal</a>
+                <a href="http://dev.cloudgym.com.br/game/punch.html">Punch</a>
+                <a href="http://dev.cloudgym.com.br/game/squat.html">Squat</a>
+            </ul></h1>
+        </nav>
+   </head>
+   <body>
+      <h1>Jump Meter</h1>
+      <div id="do-results">
+            <p>Jump: <span id="jump" class="value">0</span></p>
+            <p>Interval: <span id="interval" class="value">0</span> milliseconds</p>
+            <p>Log: <span id="logJ" class="value"></span></p>
+            <p>Status: <span id="status" class="value"></span></p>
+         </div>
+      </div>
+      <script>
+         var jump=0;
+         var jumping = false;
+         var t0 = 0;
+         var _gravityCoefficient;
+         var x;
+         var y;
+         var z;
+         var counter = 0;
+         var lastT0 = 0;
+         var _gravityCoefficient = 0;
+         if (!window.DeviceMotionEvent) {
+            //document.getElementById('dm-unsupported').classList.remove('hidden');
+         } else {
+ 
+            window.addEventListener('devicemotion', function(event) {
+               if (_gravityCoefficient == 0){
+                    _gravityCoefficient = (event.accelerationIncludingGravity.z > 0) ? -1 : 1;
+               }
+               x = event.accelerationIncludingGravity.x * _gravityCoefficient;
+               y = event.accelerationIncludingGravity.y * _gravityCoefficient;
+               z = event.accelerationIncludingGravity.z * _gravityCoefficient;
+               
+               totalJump = Math.round(x + y + z);
+               
+               document.getElementById('logJ').innerHTML = y;
+                 
+               if (!jumping && y >= 2){
+                   t0=performance.now();
+                   counter++;
+                   if (counter == 5){
+                        jumping = true;
+                        document.getElementById('status').innerHTML += '<br>Jumping ...';
+                   }
+               }else if (jumping && y < -7 && y > -13){
+                   if ((performance.now() - t0) > 200){
+                        if ((performance.now() - lastT0) > 300){
+                            jump++;
+                            document.getElementById('status').innerHTML += '<br>Jumped';
+                        }else{
+                            document.getElementById('status').innerHTML += '<br>Intervalo entre um pulo e outro invalido';
+                        }
+                        jumping = false;
+                        counter = 0;
+                        lastT0 = performance.now();
+                   }
+               } 
+               if (jumping && (performance.now() - t0) > 500){
+                        document.getElementById('status').innerHTML += '<br>Counter: ' + counter;
+                        jumping = false;
+                        counter = 0;
+                        document.getElementById('status').innerHTML += '<br>Pulo cancelado';
+                        t0 = performance.now();
+               }
+               document.getElementById('jump').innerHTML = jump;
+               document.getElementById('interval').innerHTML = event.interval;
+	        });
+         }
+
+      </script>
+   </body>

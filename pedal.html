@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Punch Meter</title>
+      <style>
+        .value{font-weight: bold;}
+        .menu a 
+            { 
+            text-decoration: none;
+            color: rgb(61, 127, 180)      
+                
+            }
+
+      </style>
+      <nav id="menu">
+            <h1><ul class="menu">
+                <a href="http://dev.cloudgym.com.br/game">Home</a>
+                <a href="http://dev.cloudgym.com.br/game/jump.html">Jump</a>
+                <a href="http://dev.cloudgym.com.br/game/moving.html">Moving</a>
+                <a href="http://dev.cloudgym.com.br/game/pedal.html">Pedal</a>
+                <a href="http://dev.cloudgym.com.br/game/punch.html">Punch</a>
+                <a href="http://dev.cloudgym.com.br/game/squat.html">Squat</a>
+            </ul></h1>
+        </nav>
+   </head>
+   <body>
+      <h1>Pedal Meter</h1>
+      <div id="do-results">
+            <p>Pedaling: <span id="punch" class="value">0</span></p>
+            <p>Status: <span id="Status" class="value"></span></p>
+            <p>Interval: <span id="interval" class="value">0</span> milliseconds</p>
+         </div>
+      </div>
+      <script>
+         var lastForce=0;
+         var pedal=0;
+         var pedaling = false;
+         var t0;
+
+         if (!window.DeviceMotionEvent) {
+            //document.getElementById('dm-unsupported').classList.remove('hidden');
+         } else {
+ 
+            window.addEventListener('devicemotion', function(event) {
+               document.getElementById('interval').innerHTML = event.interval;
+               if (!pedaling & event.accelerationIncludingGravity.y > 3){
+                   pedaling = true;
+               }else if (pedaling && event.accelerationIncludingGravity.y < 0){
+                   pedaling = false;
+                   pedal++;
+               }
+               document.getElementById('punch').innerHTML = pedal;
+
+	        });
+         }
+
+      </script>
+   </body>
+</html>

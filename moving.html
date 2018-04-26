@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Punch Meter</title>
+      <style>
+        .value{font-weight: bold;}
+        .menu a 
+            { 
+            text-decoration: none;
+            color: rgb(61, 127, 180)      
+                
+            }
+
+      </style>
+      <nav id="menu">
+            <h1><ul class="menu">
+                <a href="http://dev.cloudgym.com.br/game">Home</a>
+                <a href="http://dev.cloudgym.com.br/game/jump.html">Jump</a>
+                <a href="http://dev.cloudgym.com.br/game/moving.html">Moving</a>
+                <a href="http://dev.cloudgym.com.br/game/pedal.html">Pedal</a>
+                <a href="http://dev.cloudgym.com.br/game/punch.html">Punch</a>
+                <a href="http://dev.cloudgym.com.br/game/squat.html">Squat</a>
+            </ul></h1>
+        </nav>
+   </head>
+   <body>
+      <h1>Pedal Meter</h1>
+      <div id="do-results">
+            <p>Moving: <span id="timemov" class="value">0</span></p>
+            <p>Status: <span id="status" class="value">NA</span></p>
+            <p>Interval: <span id="interval" class="value">0</span> milliseconds</p>
+         </div>
+      </div>
+      <script>
+         var t = 0;
+         var t0 = 0;
+
+         if (!window.DeviceMotionEvent) {
+            //document.getElementById('dm-unsupported').classList.remove('hidden');
+         } else {
+            window.addEventListener('devicemotion', function(event) {
+                _gravityCoefficient = (event.accelerationIncludingGravity.z > 0) ? -1 : 1;
+               x = event.accelerationIncludingGravity.x * _gravityCoefficient;
+               y = event.accelerationIncludingGravity.y * _gravityCoefficient;
+               z = event.accelerationIncludingGravity.z * _gravityCoefficient;
+
+               total = Math.round(x + y + z);
+               document.getElementById('interval').innerHTML = event.interval;
+               document.getElementById('timemov').innerHTML = t/1000;
+               
+               if (total < -17 || total >10){
+                   document.getElementById('status').innerHTML = 'Moving';
+                   if (t0 == 0){
+                        t0 = performance.now();
+                   }
+               }else{
+                   document.getElementById('status').innerHTML = 'Stand';
+                   if (t0 > 0){
+                        t += (performance.now() - t0); 
+                        t0 = 0;
+                   }
+               }
+	        });
+         }
+
+      </script>
+   </body>
+</html>
+

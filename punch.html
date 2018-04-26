@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Punch Meter</title>
+      <style>
+        .value{font-weight: bold;}
+        .menu a 
+            { 
+            text-decoration: none;
+            color: rgb(61, 127, 180)      
+                
+            }
+
+      </style>
+      <nav id="menu">
+            <h1><ul class="menu">
+                <a href="http://dev.cloudgym.com.br/game">Home</a>
+                <a href="http://dev.cloudgym.com.br/game/jump.html">Jump</a>
+                <a href="http://dev.cloudgym.com.br/game/moving.html">Moving</a>
+                <a href="http://dev.cloudgym.com.br/game/pedal.html">Pedal</a>
+                <a href="http://dev.cloudgym.com.br/game/punch.html">Punch</a>
+                <a href="http://dev.cloudgym.com.br/game/squat.html">Squat</a>
+            </ul></h1>
+        </nav>
+   </head>
+   <body>
+      <h1>Punch Meter</h1>
+      <div id="do-results">
+            <p>Punchs: <span id="punch" class="value">0</span></p>
+            <p>Force: <span id="punchForce" class="value">0</span></p>
+            <p>Interval: <span id="interval" class="value">0</span> milliseconds</p>
+         </div>
+      </div>
+      <script>
+         var lastForce=0;
+         var punchs=0;
+         var punching = false;
+         var t0;
+
+         if (!window.DeviceMotionEvent) {
+            //document.getElementById('dm-unsupported').classList.remove('hidden');
+         } else {
+ 
+            window.addEventListener('devicemotion', function(event) {
+               document.getElementById('interval').innerHTML = event.interval;
+               //accelerationT = ((event.acceleration.x * event.acceleration.x) + (event.acceleration.y * event.acceleration.y) + (event.acceleration.z * event.acceleration.z));
+               if (event.accelerationIncludingGravity.x < 0){
+                    event.accelerationIncludingGravity.x = Math.abs(event.accelerationIncludingGravity.x);
+               }
+               accelerationT = ((event.accelerationIncludingGravity.x * event.accelerationIncludingGravity.x));
+               magnitude = Math.sqrt(accelerationT);
+               force = 0.174 * magnitude;
+               if (force > lastForce){
+                    lastForce = force;
+               }
+
+               if (force > 3 && !punching){
+                    punchs++;
+                    punching = true;
+                    lastForce = force;
+                    t=0;
+               }else if (force < 1.0){
+                    if (t0 == 0){
+                        t0 = performance.now();
+                    }else if ((performance.now() - t0) > 50){
+                        punching = false;
+                        t0 = 0;
+                    }
+               }else{
+                   t0=0;
+               }
+               document.getElementById('punch').innerHTML = punchs;
+               document.getElementById('punchForce').innerHTML = lastForce; 
+	        });
+         }
+
+      </script>
+   </body>
+</html>
